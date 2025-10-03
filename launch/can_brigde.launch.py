@@ -38,14 +38,14 @@ def generate_launch_description():
                               description='Auto-activate lifecycle nodes'),
     ])
 
-    pkg_dual_arm_config = FindPackageShare('dual_arm_config')
+    can_brigde_config = FindPackageShare('can_brigde')
 
-    interfaces = ['can0', 'can1']
+    interfaces = ['can0']
 
     for interface in interfaces:
         receiver_launch = IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
-                PathJoinSubstitution([pkg_dual_arm_config, 'launch', 'socket_can_receiver.launch.py'])
+                PathJoinSubstitution([can_brigde_config, 'launch', 'socket_can_receiver.launch.py'])
             ),
             launch_arguments={
                 'interface': interface,
@@ -63,7 +63,7 @@ def generate_launch_description():
 
         sender_launch = IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
-                PathJoinSubstitution([pkg_dual_arm_config, 'launch', 'socket_can_sender.launch.py'])
+                PathJoinSubstitution([can_brigde_config, 'launch', 'socket_can_sender.launch.py'])
             ),
             launch_arguments={
                 'interface': interface,
