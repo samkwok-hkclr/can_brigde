@@ -1,82 +1,42 @@
+import os
+
+from ament_index_python.packages import get_package_share_directory
+
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch_ros.actions import Node
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, TextSubstitution
-from launch_ros.substitutions import FindPackageShare
+from launch.actions import IncludeLaunchDescription
+from launch.substitutions import LaunchConfiguration
 
 
 def generate_launch_description():
-    launch_actions = []
-
-    launch_actions.extend([
-        DeclareLaunchArgument('namespace', default_value='',
-                              description='Namespace for all CAN nodes'),
-        
-        # For sender and recveiver
-        DeclareLaunchArgument('enable_can_fd', default_value='false',
-                              description='Enable CAN FD mode for all interfaces'),
-        DeclareLaunchArgument('use_bus_time', default_value='false',
-                              description='Use bus time for all nodes'),
-
-        # For recveiver
-        DeclareLaunchArgument('enable_frame_loopback', default_value='false',
-                              description='Enable frame loopback for receivers'),
-        DeclareLaunchArgument('interval_sec', default_value='5.0',
-                              description='Interval in seconds for all nodes'),
-        
-        DeclareLaunchArgument('filters', default_value='0:0',
-                              description='CAN filters'),
-
-        # For sender
-        DeclareLaunchArgument('timeout_sec', default_value='0.01',
-                              description=''),
-
-        # For node lifecycle
-        DeclareLaunchArgument('auto_configure', default_value='true',
-                              description='Auto-configure lifecycle nodes'),
-        DeclareLaunchArgument('auto_activate', default_value='true',
-                              description='Auto-activate lifecycle nodes'),
-    ])
-
-    pkg_dual_arm_config = FindPackageShare('dual_arm_config')
-
-    interfaces = ['can0', 'can1']
-
-    for interface in interfaces:
-        receiver_launch = IncludeLaunchDescription(
+    ld = LaunchDescription()
+    
+    launch_dir = os.path.join(get_package_share_directory("can_brigde"), "launch")
+    
+    ld.add_action(
+        IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
-                PathJoinSubstitution([pkg_dual_arm_config, 'launch', 'socket_can_receiver.launch.py'])
+                os.path.join(launch_dir, "dual_arm_can_brigde.launch.py")
             ),
             launch_arguments={
-                'interface': interface,
-                'enable_can_fd': LaunchConfiguration('enable_can_fd'),
-                'namespace': LaunchConfiguration('namespace'),
-                'enable_frame_loopback': LaunchConfiguration('enable_frame_loopback'),
-                'interval_sec': LaunchConfiguration('interval_sec'),
-                'use_bus_time': LaunchConfiguration('use_bus_time'),
-                'filters': LaunchConfiguration('filters'),
-                'auto_configure': LaunchConfiguration('auto_configure'),
-                'auto_activate': LaunchConfiguration('auto_activate'),
-                'node_name': [TextSubstitution(text='socketcan_receiver_'), TextSubstitution(text=interface)],
-            }.items()
+                "enable_can_fd": "True",
+                "namespace": "upper_orin",
+            }.items(),
         )
-
-        sender_launch = IncludeLaunchDescription(
+    )
+    
+    ld.add_action(
+        IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
-                PathJoinSubstitution([pkg_dual_arm_config, 'launch', 'socket_can_sender.launch.py'])
+                os.path.join(launch_dir, "eef_can_brigde.launch.py")
             ),
             launch_arguments={
-                'interface': interface,
-                'enable_can_fd': LaunchConfiguration('enable_can_fd'),
-                'namespace': LaunchConfiguration('namespace'),
-                'timeout_sec': LaunchConfiguration('timeout_sec'),
-                'use_bus_time': LaunchConfiguration('use_bus_time'),
-                'auto_configure': LaunchConfiguration('auto_configure'),
-                'auto_activate': LaunchConfiguration('auto_activate'),
-                'node_name': [TextSubstitution(text='socketcan_sender_'), TextSubstitution(text=interface)],
-            }.items()
+                "enable_can_fd": "False",
+                "namespace": "upper_orin",
+                "filters": "0x1D5:7FF,0x2D5:7FF,0x3D5:7FF,0x4D5:7FF,0x755:7FF",
+            }.items(),
         )
-
-        launch_actions.extend([receiver_launch, sender_launch])
-
-    return LaunchDescription(launch_actions)
+    )
+    
+    return ld
