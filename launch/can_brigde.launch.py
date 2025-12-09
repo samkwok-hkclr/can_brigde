@@ -14,6 +14,11 @@ def generate_launch_description():
     
     launch_dir = os.path.join(get_package_share_directory("can_brigde"), "launch")
     
+    range1 = [f"0x50{i}:7FF" for i in range(1, 8)]
+    range2 = [f"0x70{i}:7FF" for i in range(1, 8)]
+
+    dual_arm_ids = ",".join(range1 + range2)
+
     ld.add_action(
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
@@ -22,9 +27,12 @@ def generate_launch_description():
             launch_arguments={
                 "enable_can_fd": "True",
                 "namespace": "upper_orin",
+                "filters": dual_arm_ids
             }.items(),
         )
     )
+    
+    eef_ids = "0x1D5:7FF,0x2D5:7FF,0x3D5:7FF,0x4D5:7FF,0x755:7FF"
     
     ld.add_action(
         IncludeLaunchDescription(
@@ -34,7 +42,7 @@ def generate_launch_description():
             launch_arguments={
                 "enable_can_fd": "False",
                 "namespace": "upper_orin",
-                "filters": "0x1D5:7FF,0x2D5:7FF,0x3D5:7FF,0x4D5:7FF,0x755:7FF",
+                "filters": eef_ids,
             }.items(),
         )
     )

@@ -21,7 +21,7 @@ def generate_launch_description():
         # For recveiver
         DeclareLaunchArgument('enable_frame_loopback', default_value='false',
                               description='Enable frame loopback for receivers'),
-        DeclareLaunchArgument('interval_sec', default_value='5.0',
+        DeclareLaunchArgument('interval_sec', default_value='60.0',
                               description='Interval in seconds for all nodes'),
         
         DeclareLaunchArgument('filters', default_value='0:0',

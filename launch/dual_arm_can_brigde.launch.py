@@ -28,7 +28,7 @@ def generate_launch_description():
                               description='CAN filters'),
 
         # For sender
-        DeclareLaunchArgument('timeout_sec', default_value='0.05',
+        DeclareLaunchArgument('timeout_sec', default_value='0.01',
                               description=''),
 
         # For node lifecycle
