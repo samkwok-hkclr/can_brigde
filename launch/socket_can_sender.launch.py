@@ -31,7 +31,8 @@ def create_can_sender_node(interface, node_name, enable_can_fd, namespace):
             ('to_can_bus_fd', [interface, TextSubstitution(text='/to_can_bus_fd')])
         ],
         output='screen',
-        sigterm_timeout="10",  # Set SIGTERM timeout to 5 seconds
+        sigterm_timeout="5", # Set SIGTERM timeout to 5 seconds
+        prefix=['chrt -r 80'], # Realtime priority
     )
 
     configure_event_handler = RegisterEventHandler(

@@ -14,10 +14,11 @@ def generate_launch_description():
     
     launch_dir = os.path.join(get_package_share_directory("can_brigde"), "launch")
     
-    range1 = [f"0x50{i}:7FF" for i in range(1, 8)]
-    range2 = [f"0x70{i}:7FF" for i in range(1, 8)]
+    range1 = [f"0x10{i}:7FF" for i in range(1, 8)]
+    range2 = [f"0x50{i}:7FF" for i in range(1, 8)]
+    range3 = [f"0x70{i}:7FF" for i in range(1, 8)]
 
-    dual_arm_ids = ",".join(range1 + range2)
+    dual_arm_ids = ",".join(range1 + range2 + range3)
 
     ld.add_action(
         IncludeLaunchDescription(

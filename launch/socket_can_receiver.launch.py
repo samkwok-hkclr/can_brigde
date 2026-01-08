@@ -32,7 +32,8 @@ def create_can_receiver_node(interface, node_name, enable_can_fd, namespace):
             ('from_can_bus_fd', [interface, TextSubstitution(text='/from_can_bus_fd')])
         ],
         output='screen',
-        sigterm_timeout="10",  # Give time for graceful shutdown
+        sigterm_timeout="10", # Give time for graceful shutdown
+        prefix=['chrt -r 80'], # Realtime priority
     )
 
     configure_event_handler = RegisterEventHandler(
